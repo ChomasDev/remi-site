@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remi – Authorization</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; max-width: 600px; margin: 60px auto; padding: 0 20px; color: #1a1a1a; text-align: center; }
+    h1 { font-size: 2rem; }
+    .box { background: #f4f4f5; border-radius: 12px; padding: 24px; margin: 24px 0; word-break: break-all; font-family: monospace; font-size: 0.95rem; text-align: left; }
+    .url-box { background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 24px 0; word-break: break-all; font-family: monospace; font-size: 0.9rem; text-align: left; }
+    button { background: #0070f3; color: white; border: none; padding: 12px 28px; border-radius: 8px; font-size: 1rem; cursor: pointer; }
+    button:active { opacity: 0.8; }
+    .label { font-size: 0.8rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .error { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1 id="icon">⏳</h1>
+  <h2 id="title">Lettura codice...</h2>
+  <div id="content"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    const error = params.get('error');
+    const fullUrl = window.location.href;
+
+    const icon = document.getElementById('icon');
+    const title = document.getElementById('title');
+    const content = document.getElementById('content');
+
+    if (error) {
+      icon.textContent = '❌';
+      title.textContent = 'Autorizzazione negata';
+      content.innerHTML = `<p class="error">Errore: ${error}</p>`;
+    } else if (code) {
+      icon.textContent = '✅';
+      title.textContent = 'Autorizzazione completata!';
+      content.innerHTML = `
+        <p>Copia e incolla <strong>l'URL completo</strong> qui sotto e mandalo ad Even:</p>
+        <div class="label">URL completo (copia tutto)</div>
+        <div class="url-box" id="urlBox">${fullUrl}</div>
+        <button onclick="copyUrl()">📋 Copia URL</button>
+        <br><br>
+        <div class="label">Code (solo se serve)</div>
+        <div class="box">${code}</div>
+      `;
+    } else {
+      icon.textContent = '🤔';
+      title.textContent = 'Nessun codice trovato';
+      content.innerHTML = `<p>Torna al portale TikTok e riprova.</p>`;
+    }
+
+    function copyUrl() {
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        document.querySelector('button').textContent = '✅ Copiato!';
+        setTimeout(() => document.querySelector('button').textContent = '📋 Copia URL', 2000);
+      });
+    }
+  </script>
+</body>
+</html>
